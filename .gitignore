@@ -1,1 +1,8 @@
 .env
+.vercel
+node_modules
+dist
+dist-server
+.DS_Store
+*.bak*
+*.backup*
