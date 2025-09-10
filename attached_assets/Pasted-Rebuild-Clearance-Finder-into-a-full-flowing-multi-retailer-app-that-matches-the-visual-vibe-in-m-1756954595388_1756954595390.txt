@@ -1,0 +1,63 @@
+Rebuild “Clearance Finder” into a full, flowing multi-retailer app that matches the visual vibe in my 8 screenshots (soft gradient hero, rounded cards, subtle shadows, icon badges, pill CTAs, bold stat blocks, 4-step flow). Keep my branding and tone.
+
+USE EXISTING STACK. If none is detected, choose a modern SPA setup with routing and utility-first styling. Favor clean components, accessibility, responsiveness, and light mock data. Prepare for future login (auth screens can be placeholders; no backend needed yet).
+
+=== SCOPE ===
+• Multi-retailer support from the start.
+• Unified navigation and consistent page layouts across all tabs.
+• Client-side state + simple persistence (e.g., local or in-app storage).
+• Mock data and placeholder actions so the app “feels real” end-to-end.
+
+=== TOP-LEVEL NAVIGATION (ALL PAGES) ===
+• Global NavBar that fits the screenshots’ vibe.
+• Tabs/sections: Home, Scan, Results, History, Lists, Alerts, Pricing, Settings, Help.
+• Mobile drawer with the same links and icons; desktop shows links inline.
+• Quick access to start a scan from anywhere.
+
+=== HOMEPAGE ===
+• Hero matching the style in my screenshots: title, subtitle, primary CTA, and a location pill.
+• Location pill opens a simple editor for ZIP and radius; persist values for reuse.
+• A grid of **retailer tiles** the user can select (Home Depot, Lowe’s, Ace Hardware, Walmart, Amazon). Selecting a retailer starts the flow and carries that choice forward.
+• Feature highlights (cards) and a stats row that match the look/feel of the screenshots.
+• A visible 4-step mini-flow preview (e.g., Select → Configure → Scan → Results).
+• If location + retailer are known, show a short preview list of nearby stores/items consistent with the screenshot style and a “Continue” CTA.
+
+=== FLOW & PAGES (BROAD) ===
+• Scan: a setup page that reflects the chosen retailer and location; provide simple options (choose stores/areas, basic filters). Use mock lists and simple limits only if needed to demonstrate the flow.
+• Results: show a clean grid/list of items styled like the UI in the screenshots (image, title, price vs. clearance, discount badge, store/online source, actions like save/share). Include basic sort/filter controls.
+• History: list previous scans with an empty state that invites the user to start one.
+• Lists: saved items or shopping lists with an empty state and basic actions.
+• Alerts: simple rules/notifications placeholder with an empty state.
+• Pricing: concise plan overview that matches the marketing tone in the screenshots; keep copy generic and adjustable.
+• Settings: general preferences (location defaults, theme toggle, app info) with mock values.
+• Help: brief FAQ and contact link placeholder.
+
+=== MULTI-RETAILER ARCHITECTURE (BROAD) ===
+• Make it easy to add/remove retailers later. Treat each retailer as a small config/module (name, logo, brand accent, supports in-store/online) without hard-wiring logic.
+• Use generic interfaces so scanning, store discovery, and results rendering don’t depend on a specific retailer.
+
+=== STATE & PERSISTENCE (BROAD) ===
+• Central place for: selected retailer, ZIP, radius, lightweight user preferences.
+• Persist essentials so selections and settings survive reloads.
+
+=== DESIGN SYSTEM & ACCESSIBILITY ===
+• Derive a simple design system from the screenshots: spacing, radius, shadows, gradients, heading styles, icon badges, pill buttons, cards, and chips; apply consistently across pages.
+• Provide light + dark modes if trivial; otherwise set up hooks for theming later.
+• Enforce keyboard navigation, focus states, and alt text.
+
+=== RESPONSIVENESS & PERFORMANCE ===
+• Works cleanly on phone widths like in the screenshots; tiles/cards reflow to sensible columns.
+• Keep bundles lean; defer heavy/unused code.
+
+=== AUTH PREP (NO LOGIN YET) ===
+• Create placeholder Sign In/Sign Up/Account panels styled to match the app, but don’t wire real auth. Keep an easy hook to integrate a provider later.
+
+=== DELIVERABLES ===
+• A cohesive app with all tabs implemented, connected by working navigation.
+• Home supports multiple retailers and starts the scan flow smoothly.
+• Location pill edits/persists location and radius.
+• Results, History, Lists, Alerts, Pricing, Settings, Help all open and display styled, coherent content and empty states where appropriate.
+• Mock data is used throughout so every page demonstrates the intended behavior.
+• Code is organized into small, reusable components with clear names and comments.
+
+Build broadly and self-sufficiently: avoid hard-coding narrow rules; keep copy, limits, and visuals easy to adjust. Match the screenshots’ look/feel closely.

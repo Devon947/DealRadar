@@ -1,0 +1,72 @@
+Unify the entire “Clearance Finder” app to the SAME bluish tone used in the homepage header. Replace ALL orange accents with this blue, app-wide.
+
+GOAL
+• Use the exact blue from the existing homepage header as BRAND_PRIMARY.
+• Apply it across buttons, links, badges, chips, pills, icons, gradients, steppers, stats highlights, and CTA elements.
+• Keep the current visual vibe (soft gradients, rounded cards, subtle shadows). Only change color.
+
+HOW TO (BROAD)
+1) Detect the current header color and set theme tokens.
+   • Read the computed color(s) from the header element on “/”.
+   • Create theme tokens (CSS variables or Tailwind theme extension):
+     --brand-primary
+     --brand-primary-600
+     --brand-primary-700
+     --brand-grad-from
+     --brand-grad-to
+     --brand-ring
+     --brand-muted (optional subtle tint for chips/badges)
+   • If multiple header stops exist (gradient), use them for grad-from/to. If not detectable, pick tasteful fallbacks (e.g., #2563EB / #1E40AF) but prefer the actual header value.
+
+2) Centralize usage.
+   • Add a theme file (e.g., styles/theme.css or tailwind.config.js theme.extend) that maps app utility classes to the tokens.
+   • Ensure components (NavBar, Retailer tiles, Stepper, Pills, Cards, CTA buttons) use brand tokens, not hardcoded colors.
+
+3) Replace all orange.
+   • Remove any direct orange hex/rgb and utility classes (e.g., bg-orange-*, text-orange-*, from-orange-*, to-orange-*, ring-orange-*, border-orange-*, fill-orange-*, stroke-orange-*).
+   • Swap to brand utilities: bg-[--brand-primary], text-[--brand-primary], from-[--brand-grad-from], to-[--brand-grad-to], ring-[--brand-ring], etc.
+   • Update gradients for CTAs to brand gradient.
+
+4) Global nav and layout.
+   • Keep the nav fixed/sticky as implemented.
+   • Apply the brand blue to nav accents (active link, underline/indicator, menu icon hover, drawer header).
+   • Ensure content has proper top padding so nothing hides behind the fixed nav.
+
+5) Component polish (broad, consistent):
+   • Buttons/CTAs → brand gradient background, white text, brand ring on focus.
+   • Links → brand text color with accessible hover state (darken to --brand-primary-700).
+   • Chips/Pills/Badges → brand-muted background with brand text or border.
+   • Steppers/Progress → active step uses brand; inactive steps neutral.
+   • Stats/Highlights → use brand for numeric emphasis.
+   • Icons/SVGs → replace any orange fills/strokes with brand tokens.
+
+6) Accessibility & themes.
+   • Maintain ≥4.5:1 contrast on text over brand backgrounds (darken when needed).
+   • Keep dark mode hooks if present (derive dark variants from the same brand hue).
+
+7) Sanity checks.
+   • Home, Scan, Results, History, Lists, Alerts, Pricing, Settings, Help ALL show the unified blue.
+   • No residual orange anywhere (including hover, focus, disabled, shadows, borders, icon fills).
+   • Screenshots vibe preserved—only the color family changed.
+
+ACCEPTANCE CRITERIA
+• The exact homepage-header blue is captured as BRAND_PRIMARY and used everywhere.
+• All orange colors/utilities are removed or aliased to brand tokens.
+• CTAs, chips, stepper, badges, stats, and nav highlights now use the brand blue.
+• Fixed nav remains; spacing is correct beneath it.
+• Visuals remain cohesive and match the style of my screenshots.
+
+IMPLEMENTATION HINTS (optional if Tailwind is used)
+• In tailwind.config.js (or equivalent), extend theme.colors.brand.* with the detected colors and map gradient stops.
+• Provide CSS variable fallbacks:
+  :root {
+    --brand-primary: <detected>;
+    --brand-primary-600: <detected or slightly darker>;
+    --brand-primary-700: <darker>;
+    --brand-grad-from: <detected/from>;
+    --brand-grad-to: <detected/to>;
+    --brand-ring: <detected or outline color>;
+  }
+• Create utilities/classes that reference these vars so components don’t hardcode any color.
+
+Make these changes across the whole codebase, update styles, and remove all orange so the bluish tone from the homepage header becomes the app’s single source of truth.

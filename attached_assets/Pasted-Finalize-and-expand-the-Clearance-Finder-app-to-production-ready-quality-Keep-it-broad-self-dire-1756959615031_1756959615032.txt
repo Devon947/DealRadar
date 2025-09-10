@@ -1,0 +1,105 @@
+Finalize and expand the “Clearance Finder” app to production-ready quality. Keep it broad, self-directed, and based on my screenshots’ style (soft blue gradient, rounded cards, pill CTAs, subtle shadows, stepper, stat blocks). Use the existing stack; if none, scaffold a modern SPA (React + Router + Tailwind). Maintain mock data where needed.  
+
+========================
+CORE REQUIREMENTS
+========================
+• THEME: Unified bluish brand tone from homepage header. Remove all orange.  
+• NAVIGATION: Single Home tab only. Fixed/sticky top nav with offset.  
+• ZIP: Required onboarding; immutable once set; read-only in Settings with support note + lock icon. Guard all routes until ZIP is set.  
+• RETAILERS: Active = Home Depot, Lowe’s, Ace, Amazon. Walmart blurred “Coming Soon.” Wordmarks spelled out inside logo container.  
+• LOCATION: Ask for geolocation permission only to rank store results by distance; never changes ZIP. Add distance chips + nearest/farthest toggle.  
+
+========================
+AUTH & ACCOUNTS
+========================
+• Auth shell with mock signup/login.  
+• Require verified email to unlock referrals, affiliates, history, alerts.  
+• Profile: Name, Email, Plan, ZIP (locked), Referral code.  
+• Auth state persisted.  
+
+========================
+MEMBERSHIP & PRICING
+========================
+Plans (fair + enforced with usage meters):  
+1) Starter — $25/mo — up to 10 stores scanned/month (Home Depot, Lowe’s, Ace, Amazon), standard speed, email support.  
+2) Pro — $55/mo — up to 30 stores/month, priority speed, alerts + lists, email + chat support.  
+3) Elite — $99/mo — up to 50 stores/month, early access to Walmart, analytics dashboard, priority support.  
+
+Rules:  
+• Free trial: 3 scans in 7 days.  
+• Usage meters: show current use (e.g. “8/10 scans used”).  
+• Upgrade CTAs if limits exceeded.  
+• Refund/Usage Terms: show on Pricing and link in footer.  
+
+========================
+SCANNING & RESULTS
+========================
+/scan page (reworked): Stepper, sticky utility bar (Retailer chip, ZIP pill, Radius, Start Scan).  
+Setup cards: choose locations (distance sorted), filters (categories, discount slider, price, stock toggle, online/in-store), options.  
+Results: grid/list with discount badge, stock indicator, distance.  
+Add “freshness badge” (“Updated 12m ago”).  
+Cache last scan; show cached instantly + “refreshing…” skeleton.  
+
+========================
+HISTORY, LISTS, ALERTS
+========================
+History: one header only, list of past scans. Add Analytics dashboard (total scans, avg savings, top stores/categories).  
+Lists: add “Sort” control (Most Recent, Discount, Price, Store A→Z), persist choice.  
+Alerts: rules + Notification Center (bell icon).  
+
+========================
+REFERRALS & AFFILIATES
+========================
+Referral system: each profile has a code; support ?ref=CODE param attribution persisted.  
+Settings > Referral: show referral link + QR + copy/share + mock stats.  
+Affiliates tab: program overview, affiliate link + QR, UTM builder, mock payouts, resources.  
+
+========================
+HELP & SUPPORT
+========================
+Help page: FAQ, chat widget (plugin-ready), Email Support form (success + mailto fallback).  
+Support workflow: Admin can view tickets, mark open/triaged/closed, use canned replies.  
+
+========================
+ADMIN (password = password123)
+========================
+• RBAC: roles = owner, support.  
+• Owner: change ZIP (mock), set plan, view audit log.  
+• Support: view tickets, triage.  
+• Audit log (append-only): admin login, ZIP overrides, plan changes.  
+• Metrics: scans today, active alerts, referrals, support tickets.  
+
+========================
+COMPLIANCE & LEGAL
+========================
+• Retailer brand usage disclaimer: “Not affiliated with Home Depot, Lowe’s, Ace, Amazon, or Walmart.” Display in footer.  
+• Terms of Service, Privacy Policy, Cookie Notice pages.  
+• Privacy must explain ZIP policy and geolocation usage.  
+• Scraping/API policy page: clarify that only public data/APIs allowed; no ToS circumvention.  
+
+========================
+ACCESSIBILITY & PERFORMANCE
+========================
+• Accessibility sweep: tab order, focus rings, alt text on all logos, 4.5:1 contrast, reduced-motion respected.  
+• Micro-interactions: buttons have gradient shift, hover lift, ripple on mobile, consistent focus ring.  
+• Code splitting for heavy pages; skeletons for loads.  
+• PWA: add manifest + service worker (offline shell for history/lists).  
+• Add error + event tracking (mock Sentry + analytics events: scan_start, scan_complete, plan_blocked, upgrade_click).  
+
+========================
+ACCEPTANCE CRITERIA
+========================
+• Unified blue brand applied everywhere.  
+• Only one Home header; ZIP is required, locked, and clearly marked as unchangeable.  
+• Location permission ranks stores only; ZIP never changes.  
+• Pricing tiers enforced with meters; free trial works; Refund/Usage Terms visible.  
+• Results show stock freshness + caching; History has analytics; Lists have Sort; Alerts integrate with Notification Center.  
+• Referrals & affiliates work (links, QR, attribution, mock stats).  
+• Help has chat + email support; Admin gated by password + RBAC roles; audit log captures actions.  
+• Terms, Privacy, Cookie, and Scraping/API policy pages included.  
+• Accessibility + performance standards met (PWA, error tracking, skeletons).  
+
+========================
+DELIVERABLE
+========================
+A production-ready, blue-themed app with all features above, using mock data and broad, extensible design. Ensure the app feels complete, membership rules are enforced, and all legal + compliance basics are in place.

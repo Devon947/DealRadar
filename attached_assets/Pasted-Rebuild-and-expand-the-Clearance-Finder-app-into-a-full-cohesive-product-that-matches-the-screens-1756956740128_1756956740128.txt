@@ -1,0 +1,126 @@
+Rebuild and expand the “Clearance Finder” app into a full, cohesive product that matches the screenshots’ vibe (soft gradient blue theme, rounded cards, pill CTAs, icon badges, stepper, stat blocks). Use the existing stack; if none is detected, scaffold with a modern SPA (React + Router + Tailwind). Keep everything broad and self-directed, with mock data where needed.  
+
+========================
+GLOBAL RULES
+========================
+• THEME: Use the SAME bluish tone from the homepage header as the brand color. Replace all orange with this blue.  
+• NAVIGATION: One single Home tab only. Fixed/sticky top nav with offset so content is never hidden.  
+• ICONS: Each retailer (Home Depot, Lowe’s, Ace, Walmart, Amazon) must display the correct logo/icon.  
+• ZIP REQUIRED: Onboarding forces ZIP entry before anything else. Save to “account profile,” make it immutable to users. Show ZIP as read-only in Settings. Only Admin can change.  
+• ROUTE GUARD: Block all routes (scan, results, history, lists, alerts, pricing, settings, help) until ZIP is set.  
+• HELP + SUPPORT: Add a chat widget placeholder (plugin-ready) and an Email Support form. Both visible on Help page and via footer.  
+
+========================
+HOME (/)  
+========================
+• Hero: Title, subtitle, CTA “Start Finding Deals.”  
+• On clicking CTA → smooth scrolls down to the Retailer Grid.  
+• Retailer Grid: 5 large tiles with correct icons/logos. User must select a store to move forward.  
+• After selection, either reveal a “Continue” button or auto-route to /scan with retailer set.  
+• Feature Cards, Stats Row, and Stepper preview below grid (same blue theme).  
+
+========================
+/SCAN (REWORK COMPLETELY)  
+========================
+Delete current scan content and rebuild consistent with the app.  
+• Sticky stepper (Select → Configure → Scan → Results).  
+• Utility bar: Retailer chip (logo + name), ZIP pill (read-only), Radius pill (editable), “Start Scan” button.  
+• Main content (2-col desktop, stacked mobile):  
+  LEFT: Setup Cards  
+    1) Locations: selectable store list (mock, filtered by ZIP).  
+    2) Filters: category chips, min discount slider, price range, in-stock toggle, online vs in-store toggles.  
+    3) Options: result limit, default sort, show/hide out-of-stock preview.  
+  RIGHT: Live Preview  
+    • Summary chips (Retailer, ZIP, Radius, Stores selected, Filters count).  
+    • Tiny mock preview grid.  
+    • Secondary “Continue” button.  
+• Start Scan → short skeleton → /results.  
+
+========================
+/RESULTS  
+========================
+• Grid/list of mock deal cards: product image, title, original vs clearance price, discount badge, store.  
+• Actions: Save to List, Share, Favorite.  
+• Toolbar: Sort (Discount, Price, Distance), Filter chips visible.  
+
+========================
+/HISTORY  
+========================
+• List of past scans with timestamp + summary.  
+• Empty state: “No scans yet” + CTA.  
+• Add an **Analytics Dashboard** section: total scans run, average savings %, top stores, top categories.  
+
+========================
+/LISTS  
+========================
+• Saved lists of items, with mock items.  
+• Empty state: “No saved items yet.”  
+• Features: Sort/filter, export to CSV, “Share list” button (mock share link).  
+• Quick “Favorites” list auto-generated from starred items.  
+
+========================
+/ALERTS  
+========================
+• Alerts page with empty state + “Create Alert.”  
+• Add in-app Notification Center (bell icon in nav).  
+• Alerts can trigger: “Notify me when discount > X%,” “Alert me for [Category],” etc.  
+• Alerts should demo in both page + Notification Center.  
+
+========================
+/PRICING  
+========================
+• Free vs Premium plan cards.  
+• Free plan: limited stores/alerts. Premium plan: unlocks scanning up to 25 stores, unlimited alerts.  
+• Premium features should appear throughout app as locked with “Upgrade” CTA (mock only).  
+
+========================
+/SETTINGS  
+========================
+• Account profile panel: name, email, subscription level (mock).  
+• ZIP (read-only, immutable).  
+• Radius default, theme toggle, notification preferences.  
+• Link to Help + Support.  
+
+========================
+/HELP  
+========================
+• FAQ section (mock Q&A).  
+• Chat widget placeholder (plugin-ready).  
+• Email Support form (Name, Email, Subject, Message). Submit shows success + mailto fallback.  
+
+========================
+/ADMIN (PASSWORD PROTECT)  
+========================
+• Access at /admin, password = “password123.”  
+• Features:  
+  – Change ZIP for any account (mock).  
+  – View support inbox (mock submissions).  
+  – Toggle chat plugin state (mock).  
+  – User list (mock).  
+  – Metrics: total scans today, active alerts, support requests.  
+  – Premium toggle for mock users.  
+
+========================
+STATE & PERSISTENCE  
+========================
+• Central store: { zip, radius, retailerId, filters, options, isAdmin, profile, notifications }.  
+• Persist essentials (zip, radius, retailerId, profile).  
+• ZIP required guard applies everywhere.  
+
+========================
+ACCEPTANCE CRITERIA  
+========================
+• Only one Home page in nav.  
+• ZIP is required, immutable for users, and enforced globally.  
+• “Start Finding Deals” CTA smooth-scrolls to Retailer Grid → store selection required.  
+• Retailer logos correct.  
+• /scan reworked to match app theme and flow.  
+• Results, History (with Analytics), Lists (with Sharing), Alerts (with Notification Center), Pricing (with Upgrade CTAs), Settings, Help (with Chat + Email), Admin (with password123) all present and consistent.  
+• All orange removed; unified blue brand tokens used everywhere.  
+• Chat/email support ready to be connected.  
+• Admin page functions as simple mock CMS.  
+
+========================
+DELIVERABLE  
+========================
+A cohesive, blue-themed, full app with all features above, using mock data and broad, extensible design. No backend needed, but all flows must feel real and production-ready.

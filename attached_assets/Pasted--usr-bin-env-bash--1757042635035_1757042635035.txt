@@ -1,0 +1,159 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# CLEARANCE FINDER — HOME DEPOT DATA INTEGRATION (TAILORED TO YOUR BUILD)
+# Explanation-only spec in bash comments. Generic and app-driven (no hard deps).
+# Mirrors your “Requirements / Strengths / Next Steps / File Locations”.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# GOAL
+# ------------------------------------------------------------------------------
+# Replace mock data with real Home Depot data while preserving your existing UX,
+# progress system, and data models. Keep the implementation flexible so the app
+# can choose the active strategy (official API if available, or alternative data
+# acquisition if not), without hardcoding vendor-specific details here.
+
+# ------------------------------------------------------------------------------
+# REQUIREMENTS FOR REAL IMPLEMENTATION (HOW WE MEET EACH ONE)
+# ------------------------------------------------------------------------------
+# 1) Home Depot Developer Account / API Keys
+#    - Add a provider-agnostic credential layer (ENV or secrets store).
+#    - App decides which provider to enable at runtime (HD official API, partner
+#      feed, or other approved source). If keys are absent, fall back to mock.
+#
+# 2) Rate Limiting (Prevent Server Blocking)
+#    - Introduce a centralized throttle for outbound requests (per-domain cap).
+#    - Queue jobs; control concurrency at the worker level.
+#    - Backoff policy on transient errors (exponential, jittered).
+#
+# 3) Error Handling (API/Network Failures)
+#    - Standardized result envelope: { ok:boolean, data|error, retriable:boolean }.
+#    - Categorize failures (client, server, network, timeout) and decide:
+#      retry now, retry later, or surface friendly UI message.
+#    - Never let a single failure break the whole scan—degrade gracefully.
+#
+# 4) Data Parsing (Convert HD Data Format)
+#    - Add a lightweight adapter that maps provider fields → your internal schema.
+#    - Keep it text/label/field-name anchored (no reliance on brittle markup).
+#    - Normalize prices, availability, and identifiers (SKU/Internet#/URL).
+#
+# 5) Caching (Avoid Repeated Calls)
+#    - Cache by a composite key (e.g., productId + storeId).
+#    - Short TTL for volatile values (price/stock), longer TTL for static values
+#      (titles, images). Respect cache bypass when a forced refresh is required.
+#
+# 6) Compliance (Follow Terms of Service)
+#    - Use only approved/allowed data sources and access patterns.
+#    - Keep request rates low; add global kill–switch/feature flag.
+#    - Log provenance per item (which source produced which record) for audits.
+
+# ------------------------------------------------------------------------------
+# CURRENT ARCHITECTURE STRENGTHS (HOW TO LEVERAGE THEM)
+# ------------------------------------------------------------------------------
+# • StoreScraper class easily extensible
+#   - Keep a single “HomeDepotProvider” that implements the StoreScraper interface.
+#   - Provider internally decides source (official API vs. alternative) via flags.
+#
+# • Progress tracking system built
+#   - Emit existing progress milestones (connecting, locating stores, fetching,
+#     analyzing, finalizing) from inside the provider; reuse your UI hooks.
+#
+# • Data storage handles real products
+#   - Persist normalized records exactly as now; no schema changes required.
+#
+# • Frontend displays any product data
+#   - Feed it the normalized shape; do not alter presentational components.
+#
+# • User experience fully functional
+#   - Keep mock strategy as a safe fallback controlled by a feature flag.
+
+# ------------------------------------------------------------------------------
+# NEXT STEPS TO GO LIVE (HIGH-LEVEL, PROVIDER-AGNOSTIC)
+# ------------------------------------------------------------------------------
+# 1) Obtain/Configure a real data source
+#    - If official API keys exist: enable “api” mode in the provider.
+#    - Else: enable an alternative approved source mode.
+#
+# 2) Replace mock in scrapeHomeDepot()
+#    - Dispatch to the provider; if provider unavailable, return mock with a
+#      “source=mock” tag so the UI can label it accordingly.
+#
+# 3) Add live inventory/clearance checking
+#    - Provider returns only items that meet the “in-store clearance” condition
+#      according to the source’s definition. The app should not guess; rely on
+#      the provider’s truth signal (e.g., explicit clearance flag, price delta,
+#      or an authoritative indicator).
+#
+# 4) Implement error handling
+#    - Wrap all provider calls with the standardized envelope and backoff logic.
+#    - Record failures with minimal PII and actionable metadata.
+#
+# 5) Add rate limiting + caching
+#    - Outbound gate: per-domain QPS cap + burst allowance.
+#    - Result cache: short TTL for price/stock; purge on source-level invalidations.
+
+# ------------------------------------------------------------------------------
+# FILE LOCATIONS (KEEP YOUR STRUCTURE; ADD A THIN PROVIDER LAYER)
+# ------------------------------------------------------------------------------
+# • Main scraper:            server/scraper.ts
+#   - Route scrapeHomeDepot() through a “homeDepotProvider” selector:
+#       - mode: 'api' | 'alt' | 'mock' (decided by env/availability)
+#
+# • API routes:              server/routes.ts
+#   - No signature changes; just call into the scraper and stream progress.
+#
+# • Store data:              client/src/components/real-store-data.tsx
+#   - Continue using for store selection and display; no coupling to provider.
+#
+# • Scan setup:              client/src/pages/scan-setup.tsx
+#   - Keep the current flow; scan button triggers the same endpoint.
+
+# ------------------------------------------------------------------------------
+# RUNTIME CONFIG (FEATURE FLAGS)
+# ------------------------------------------------------------------------------
+# - HD_DATA_MODE=api|alt|mock   # chooses provider strategy
+# - HD_RATE_LIMIT=...           # requests/sec or tokens/interval
+# - HD_CACHE_TTL_FAST=...       # seconds for volatile fields
+# - HD_CACHE_TTL_SLOW=...       # seconds for stable fields
+# - HD_KILLSWITCH=false         # set true to instantly disable live data
+
+# ------------------------------------------------------------------------------
+# NORMALIZATION CONTRACT (OUTPUT SHAPE TO FRONTEND)
+# ------------------------------------------------------------------------------
+# {
+#   name, sku, productUrl, imageUrl?,
+#   clearancePrice, wasPrice, savePercent?,
+#   isOnClearance, storeId, storeName?,
+#   availability?, observedAt, source
+# }
+# - Keep this stable so the UI remains unchanged.
+# - “source” tracks provenance: 'api' | 'alt' | 'mock'.
+
+# ------------------------------------------------------------------------------
+# QUALITY / RELIABILITY CHECKS
+# ------------------------------------------------------------------------------
+# - Unit tests for the adapter (field mapping and price math).
+# - Smoke tests for provider selection (api/alt/mock) via flags.
+# - Load test with rate limiter on to confirm no throttle violations.
+# - Observability: logs for start/end of phases, counts, and error types.
+
+# ------------------------------------------------------------------------------
+# ACCEPTANCE CRITERIA
+# ------------------------------------------------------------------------------
+# - With live mode enabled, scrapeHomeDepot() returns real items that satisfy the
+#   in-store clearance condition from the chosen provider, with proper caching,
+#   rate limiting, and friendly error behavior.
+# - With live mode disabled, mock results continue to render; the UI does not
+#   degrade or change shape.
+# - No code path requires hardcoded selectors or brittle assumptions; all details
+#   live inside the provider, not the app layer.
+
+# ------------------------------------------------------------------------------
+# DEPLOYMENT / ROLLBACK
+# ------------------------------------------------------------------------------
+# - Roll out behind HD_DATA_MODE flag set to 'mock' → switch to 'api' or 'alt'
+#   for canary users → monitor → then ramp to all users.
+# - Rollback by setting HD_DATA_MODE='mock' or flipping HD_KILLSWITCH=true.
+
+# End of generic, app-driven plan. Integrate without changing your public API,
+# UI contracts, or file layout. The provider encapsulates all source specifics.

@@ -1,0 +1,112 @@
+Update the “Clearance Finder” app per the screenshots’ vibe (soft bluish gradient, rounded cards, pill CTAs, subtle shadows). Keep ZIP-required guard, correct retailer icons, fixed/sticky nav, and the unified blue brand. No backend; use mock data.
+
+========================
+A. GLOBAL UI POLISH
+========================
+1) BACKGROUND SHADE (MATCH ALERTS TAB)
+- Inspect the Alerts page container/background colors and compute the base surface + subtle tint (read computed CSS values).
+- Create theme tokens:
+  --surface, --surface-muted, --panel, --panel-border, --panel-shadow
+- Apply these tokens app-wide so every route uses the SAME soft background shade as Alerts (Home, Scan, Results, History, Lists, Alerts, Pricing, Settings, Help, Admin).
+- Keep content panels on “cards” with the same radius/shadow as the rest of the app.
+- If detection fails, fallback to:
+  :root {
+    --surface: #0b1020;          /* very deep blue-black */
+    --surface-muted: #0f152a;     /* subtle blue tint */
+    --panel: #11192f;             /* card bg */
+    --panel-border: rgba(255,255,255,0.06);
+    --panel-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+- Ensure contrast ≥ 4.5:1; adjust text/links accordingly.
+
+2) BRAND CONSISTENCY
+- Ensure the bluish brand tokens (from the home header) are used for all accents; remove any remaining orange/purple.
+- Audit utilities: replace bg-* / text-* / from-* / to-* that diverge from brand tokens.
+
+3) NAV + LAYOUT
+- Fixed/sticky nav remains; ensure there is a single global header on every route.
+- Add proper top padding so content never hides behind nav.
+
+========================
+B. HISTORY PAGE – DOUBLE HEADER BUG
+========================
+- On /history there are TWO headers/brand bars (see screenshot). Remove duplication:
+  - Ensure the History page renders inside a single Layout shell (one NavBar).
+  - Check the route-level component isn’t mounting an extra header.
+  - Add a regression check so no page can inject an extra header/brand bar.
+
+========================
+C. LISTS – “SORT” TAB/CONTROL
+========================
+- On /lists, add a visible “Sort” control that fits the app style:
+  - Options: Most Recent, Discount (High→Low), Price (Low→High), Store A→Z.
+  - Use a segmented control or a dropdown labelled “Sort”.
+  - Persist last choice in local storage and default to “Most Recent”.
+  - Keep filter chips visible alongside Sort.
+  - Update list ordering instantly (no reload).
+
+========================
+D. SETTINGS – REFERRAL
+========================
+- Add a “Referral” section in /settings:
+  - Show the user’s referral code and a generated referral link (mock), e.g., https://clearancefinder.app/r/ABC123
+  - Copy-to-clipboard button + “Share” button (navigator.share if available).
+  - QR code render (client-side canvas or SVG).
+  - Basic mock stats: clicks, signups, referred scans.
+  - Small note about terms.
+
+========================
+E. NEW /AFFILIATES TAB
+========================
+- Add a top-level nav item “Affiliates” → /affiliates
+- Page sections:
+  1) Program Overview: brief benefits + tiers (mock).
+  2) Your Affiliate Link: same link as in Settings → Referral, with copy/share and QR.
+  3) UTM Builder: inputs for source/medium/campaign → preview of final URL.
+  4) Payouts (mock): current month, pending, lifetime.
+  5) Resources: brand kit download (mock), best practices.
+- Hook into the same mock stats store used by Settings → Referral so numbers match.
+
+========================
+F. HELP + SUPPORT (KEEP)
+========================
+- Keep chat widget as plugin-ready component (free vendor can be swapped later).
+- Keep Email Support form with success state and mailto fallback.
+- Feed support submissions into Admin’s mock inbox.
+
+========================
+G. ADMIN (KEEP + TWEAKS)
+========================
+- Keep /admin with password “password123”.
+- Add “Referrals” panel: view mock referral stats, search by user/email, toggle affiliate status.
+- Add “Theme” panel: live preview of surface/background tokens; show current computed colors from Alerts reference.
+
+========================
+H. STATE & PERSISTENCE
+========================
+- Central store keeps: { zip (required, immutable to user), radius, retailerId, lists, alerts, notifications, referralCode, affiliateStats }.
+- Guard all routes behind ZIP onboarding if zip is missing.
+- Persist sort preference for /lists and referral/affiliate basics.
+
+========================
+I. ACCEPTANCE CRITERIA
+========================
+- Background shade across ALL pages matches the Alerts page vibe via theme tokens; no mismatched surfaces.
+- /history shows only ONE header/nav; no duplicate brand bars anywhere.
+- /lists has a working, visible Sort control with the options listed; preference persists.
+- /settings includes a Referral section with link, copy/share, QR, and mock stats.
+- New /affiliates page exists with program overview, link/QR, UTM builder, payouts, and resources.
+- Chat/email support remain ready to connect; submissions appear in Admin inbox (mock).
+- All pages keep the unified blue brand and fixed nav; no orange/purple leftovers.
+- ZIP requirement, retailer icons accuracy, and flow constraints remain intact.
+
+========================
+J. IMPLEMENTATION NOTES (broad)
+========================
+- Create/extend a Theme module to expose surface + brand tokens to all components.
+- Add a Layout wrapper that applies background + spacing; all routes should use it (prevents duplicate headers).
+- Lists page: introduce a small Sort component that updates a selector in state and reorders items.
+- Referral/Affiliates: generate a deterministic mock referralCode per “profile”; reuse in both places.
+- Provide light/dark variants only if trivial; otherwise keep consistent with the Alerts look.
+
+Deliver broadly and self-sufficiently; rely on mock data and avoid vendor lock-in. The app should feel cohesive, production-ready, and visually matched to the Alerts background vibe.

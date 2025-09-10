@@ -1,0 +1,52 @@
+Step 3 Prompt (Home Depot “real” verification in ALT mode):
+
+Implement the real product verification for Home Depot in the alt provider mode. This checks candidate product pages for the in-store clearance reveal and returns only confirmed clearance items. Keep routes/UI unchanged and reuse the existing progress system.
+	1.	Where to implement
+
+	•	File: server/providers/homeDepot.ts
+	•	Add an AltHomeDepotProvider class that implements the HdProvider interface you created in Step 1.
+	•	Export it from createHomeDepotProvider(mode) when mode === 'alt'.
+
+	2.	Inputs and call
+
+	•	fetchDeals({ zip, storeIds, productSeeds, onProgress })
+	•	storeIds: computed in Step 2.
+	•	productSeeds: array of { sku?: string; productUrl: string; title?: string }.
+	•	onProgress: call with short messages at each phase.
+
+	3.	Browser strategy (Playwright)
+
+	•	Launch a single browser; reuse a context for the whole scan.
+	•	Per store, create a new page (or context if needed) to avoid cookie bleed.
+	•	Throttle: 1 navigation per second per page; await page.waitForTimeout(800–1500ms) between actions.
+	•	Retries: for navigation/500s/429s, retry up to 2 with exponential backoff.
+
+	4.	Set active store
+
+	•	Implement setActiveStore(page, storeId) that reliably sets the current store for the session.
+	•	Use a stable flow supported by the site (store selector UI or accepted URL/store parameter).
+	•	After setting, wait briefly and verify the store label/pill reflects the target storeId or store name.
+
+	5.	Verification logic per (store, product)
+For each productSeed in each storeId:
+
+	•	onProgress("Checking product for store…")
+	•	Navigate to productUrl. Wait for domcontentloaded.
+	•	If a control with text similar to “See In-Store Clearance Price” is available, click it.
+	•	Wait for a confirmation element containing text similar to “In-Store Clearance Item” to appear.
+	•	If confirmed, extract within that panel (text/label anchored, not CSS classes):
+	•	clearancePrice: first $ value shown inside the panel.
+	•	wasPrice: value near “Online Price” or strike-through “Was” text.
+	•	savePercent: text like Save 81%.
+	•	inStock: pattern like \d+ in stock.
+	•	deliveryAvailable: pattern like \d+ available (optional).
+	•	If the confirmation panel never appears, mark isOnClearance = false.
+
+	6.	Caching
+
+	•	Add an in-memory cache keyed by (storeId, productUrl) with a 24h TTL.
+	•	Before checking a pair, return the cached result if present unless a force flag is provided (not required in UI now).
+	•	After a successful check (true or false), write to cache.
+
+	7.	Normalization
+Return an array of items using your existing result shape. Include only confirmed clearance items:
